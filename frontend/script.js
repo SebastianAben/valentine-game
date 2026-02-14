@@ -61,28 +61,6 @@ let hearts = [];
 const heartEmojis = ['❤️', '💖', '💘', '💝', '💓'];
 const badEmojis = ['💔']; // Optional: obstacles
 
-class Heart {
-    constructor() {
-        this.x = Math.random() * (canvas.width - 60) + 30;
-        this.y = -50;
-        this.speed = Math.random() * 3 + 2; // Speed 2-5
-        this.type = Math.random() > 0.1 ? 'good' : 'bad'; // 10% chance of bad (if enabled)
-        this.emoji = this.type === 'good' 
-            ? heartEmojis[Math.floor(Math.random() * heartEmojis.length)]
-            : badEmojis[0];
-        this.size = 30 + Math.random() * 20;
-    }
-
-    draw() {
-        ctx.font = `${this.size}px Arial`;
-        ctx.fillText(this.emoji, this.x, this.y);
-    }
-
-    update() {
-        this.y += this.speed;
-    }
-}
-
 // --- Input Handling ---
 let inputX = canvas.width / 2;
 
