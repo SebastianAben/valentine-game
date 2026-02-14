@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catch My Heart ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for that romantic feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Game Container -->
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- UI: Score -->
+        <div id="ui-layer">
+            <div id="score-board">Hearts: <span id="score">0</span> / 14</div>
+        </div>
+
+        <!-- Screen: Start Game -->
+        <div id="start-screen" class="screen">
+            <h1>Catch My Heart</h1>
+            <p>Tangkap 14 Hati untuk membaca secret message</p>
+            <p class="instructions">(Geser keranjang ke kiri & kanan)</p>
+            <button id="start-btn">Mulai Main ❤️</button>
+        </div>
+
+        <!-- Screen: Win / Message -->
+        <div id="win-screen" class="screen hidden">
+            <div class="card">
+                <h2>Happy Valentine's Day! 💖</h2>
+                <div class="message-content">
+                    <p>I love you sayangg</p>
+                    <p>Thank you for the love and laughter that we share everyday</p>
+                    <p>Having you in my life is the greatest gift I could ever ask for</p>
+                    <p>Love, Aben</p>
+                </div>
+                <button id="replay-btn">Play Again ↺</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

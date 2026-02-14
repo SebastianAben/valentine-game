@@ -1,0 +1,161 @@
+:root {
+    --primary: #ff4d6d;
+    --secondary: #ff8fa3;
+    --bg-color: #fff0f3;
+    --text-color: #590d22;
+    --font-heading: 'Pacifico', cursive;
+    --font-body: 'Fredoka One', cursive;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none; /* Prevent text selection during game */
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: var(--font-body);
+    overflow: hidden; /* Prevent scrolling */
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 600px; /* Max width for desktop */
+    background: linear-gradient(180deg, #ffe3e9 0%, #ffd1dc 100%);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* UI Layer */
+#ui-layer {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#score-board {
+    font-size: 1.5rem;
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Screens (Start & Win) */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 240, 243, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    text-align: center;
+    transition: opacity 0.5s;
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+h1 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0px #fff;
+}
+
+p {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.instructions {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-family: var(--font-body);
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+button:hover {
+    background-color: #d90429;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Win Card */
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 80%;
+    border: 4px solid var(--secondary);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card h2 {
+    font-family: var(--font-heading);
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.message-content {
+    text-align: left;
+    margin-bottom: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Readable font for letter */
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+    h1 { font-size: 2.5rem; }
+    .card { padding: 20px; width: 90%; }
+}
