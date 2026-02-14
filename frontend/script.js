@@ -127,8 +127,6 @@ function getCachedEmoji(emoji, size) {
 }
 
 // Pre-load common emojis
-const heartEmojis = ['❤️', '💖', '💘', '💝', '💓'];
-const badEmojis = ['💔'];
 const particleChars = ['❤️', '💔', '🎉', '🎊', '✨', '💖'];
 
 heartEmojis.forEach(e => getCachedEmoji(e, 40)); // Default size approx
