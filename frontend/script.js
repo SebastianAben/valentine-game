@@ -43,6 +43,9 @@ const player = {
         }
     },
     update(inputX) {
+        // Always snap to bottom relative to current canvas height
+        this.y = canvas.height - 90;
+
         // Smooth movement towards input
         if (inputX !== null) {
             this.x += (inputX - this.x) * 0.2;
