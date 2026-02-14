@@ -233,6 +233,29 @@ function updateParticles() {
     }
 }
 
+// --- Game Control ---
+
+function startGame() {
+    score = 0;
+    scoreEl.innerText = '0';
+    hearts = [];
+    particles = [];
+    gameRunning = true;
+    startScreen.classList.add('hidden');
+    winScreen.classList.add('hidden');
+    resize();
+    update();
+}
+
+function winGame() {
+    gameRunning = false;
+    cancelAnimationFrame(animationId);
+    triggerConfetti();
+    setTimeout(() => {
+        winScreen.classList.remove('hidden');
+    }, 500);
+}
+
 // --- Confetti (Simple Implementation) ---
 function triggerConfetti() {
     // A simple burst of colors using our existing particle system logic
