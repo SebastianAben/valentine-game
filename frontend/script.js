@@ -105,6 +105,36 @@ window.addEventListener('touchmove', handleInput, { passive: false });
 window.addEventListener('touchstart', handleInput, { passive: false });
 
 
+// --- Optimization: Emoji Cache ---
+// Pre-render emojis to off-screen canvases to improve mobile performance significantly
+const emojiCache = {};
+
+function getCachedEmoji(emoji, size) {
+    const key = `${emoji}-${size}`;
+    if (emojiCache[key]) return emojiCache[key];
+
+    const c = document.createElement('canvas');
+    c.width = size + 10; // Padding
+    c.height = size + 10;
+    const t = c.getContext('2d');
+    t.font = `${size}px Arial`;
+    t.textAlign = 'center';
+    t.textBaseline = 'middle';
+    t.fillText(emoji, c.width / 2, c.height / 2);
+    
+    emojiCache[key] = c;
+    return c;
+}
+
+// Pre-load common emojis
+const heartEmojis = ['❤️', '💖', '💘', '💝', '💓'];
+const badEmojis = ['💔'];
+const particleChars = ['❤️', '💔', '🎉', '🎊', '✨', '💖'];
+
+heartEmojis.forEach(e => getCachedEmoji(e, 40)); // Default size approx
+badEmojis.forEach(e => getCachedEmoji(e, 40));
+particleChars.forEach(e => getCachedEmoji(e, 20));
+
 // --- Game Loop ---
 
 function spawnHeart() {
@@ -114,7 +144,10 @@ function spawnHeart() {
 }
 
 function checkCollisions() {
-    hearts.forEach((heart, index) => {
+    // Iterate backwards to safely remove items
+    for (let i = hearts.length - 1; i >= 0; i--) {
+        const heart = hearts[i];
+        
         // Simple distance check
         const dist = Math.hypot(player.x - heart.x, player.y - heart.y + 20); // +20 adjusts for emoji center
         
@@ -124,13 +157,11 @@ function checkCollisions() {
                 score++;
                 createParticles(heart.x, heart.y, '❤️');
             } else {
-                // If we add bad hearts later: score = Math.max(0, score - 1);
-                // For now, let's make bad hearts just pop without score or -1
                 score = Math.max(0, score - 1);
                 createParticles(heart.x, heart.y, '💔');
             }
             
-            hearts.splice(index, 1);
+            hearts.splice(i, 1);
             scoreEl.innerText = score;
             
             // Win Condition
@@ -139,9 +170,9 @@ function checkCollisions() {
             }
         } else if (heart.y > canvas.height) {
             // Remove if off screen
-            hearts.splice(index, 1);
+            hearts.splice(i, 1);
         }
-    });
+    }
 }
 
 function update() {
@@ -165,9 +196,37 @@ function update() {
     animationId = requestAnimationFrame(update);
 }
 
+class Heart {
+    constructor() {
+        this.x = Math.random() * (canvas.width - 60) + 30;
+        this.y = -50;
+        this.speed = Math.random() * 3 + 2; // Speed 2-5
+        this.type = Math.random() > 0.1 ? 'good' : 'bad'; // 10% chance of bad (if enabled)
+        this.emoji = this.type === 'good' 
+            ? heartEmojis[Math.floor(Math.random() * heartEmojis.length)]
+            : badEmojis[0];
+        this.size = 30 + Math.floor(Math.random() * 20); // Integer size for better caching
+        
+        // Cache immediately
+        this.cachedImg = getCachedEmoji(this.emoji, this.size);
+    }
+
+    draw() {
+        // Draw image instead of text for performance
+        if (this.cachedImg) {
+            ctx.drawImage(this.cachedImg, this.x - this.cachedImg.width/2, this.y - this.cachedImg.height/2);
+        }
+    }
+
+    update() {
+        this.y += this.speed;
+    }
+}
+
 // --- Particles (Explosion Effect) ---
 let particles = [];
 function createParticles(x, y, char) {
+    const cached = getCachedEmoji(char, 20);
     for (let i = 0; i < 8; i++) {
         particles.push({
             x: x,
@@ -175,7 +234,7 @@ function createParticles(x, y, char) {
             vx: (Math.random() - 0.5) * 10,
             vy: (Math.random() - 0.5) * 10,
             life: 1.0,
-            char: char
+            cachedImg: cached
         });
     }
 }
@@ -188,36 +247,14 @@ function updateParticles() {
         p.life -= 0.05;
         p.vy += 0.5; // Gravity
         
-        ctx.globalAlpha = p.life;
-        ctx.font = '20px Arial';
-        ctx.fillText(p.char, p.x, p.y);
+        ctx.globalAlpha = Math.max(0, p.life);
+        if (p.cachedImg) {
+            ctx.drawImage(p.cachedImg, p.x - p.cachedImg.width/2, p.y - p.cachedImg.height/2);
+        }
         ctx.globalAlpha = 1.0;
 
         if (p.life <= 0) particles.splice(i, 1);
     }
-}
-
-// --- Game Control ---
-
-function startGame() {
-    score = 0;
-    scoreEl.innerText = '0';
-    hearts = [];
-    particles = [];
-    gameRunning = true;
-    startScreen.classList.add('hidden');
-    winScreen.classList.add('hidden');
-    resize();
-    update();
-}
-
-function winGame() {
-    gameRunning = false;
-    cancelAnimationFrame(animationId);
-    triggerConfetti();
-    setTimeout(() => {
-        winScreen.classList.remove('hidden');
-    }, 500);
 }
 
 // --- Confetti (Simple Implementation) ---
@@ -225,13 +262,16 @@ function triggerConfetti() {
     // A simple burst of colors using our existing particle system logic
     // but covering the whole screen
     for (let i = 0; i < 100; i++) {
+        const char = ['🎉', '🎊', '✨', '💖'][Math.floor(Math.random()*4)];
+        const cached = getCachedEmoji(char, 30);
+        
         particles.push({
             x: canvas.width / 2,
             y: canvas.height / 2,
             vx: (Math.random() - 0.5) * 30,
             vy: (Math.random() - 1) * 30,
             life: 3.0,
-            char: ['🎉', '🎊', '✨', '💖'][Math.floor(Math.random()*4)]
+            cachedImg: cached
         });
     }
     
