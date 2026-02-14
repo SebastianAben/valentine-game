@@ -24,19 +24,19 @@ resize();
 
 // Player (The Kitten Basket)
 const playerImg = new Image();
-playerImg.src = './kitten.png';
+playerImg.src = '/kitten.png'; // Path relative to public folder
 
 const player = {
     x: canvas.width / 2,
     y: canvas.height - 80,
-    width: 80, // Slightly larger for the image
+    width: 80,
     height: 80,
     draw() {
-        if (playerImg.complete) {
-            // Draw image centered
+        // Only draw if image is fully loaded and not broken
+        if (playerImg.complete && playerImg.naturalWidth !== 0) {
             ctx.drawImage(playerImg, this.x - this.width / 2, this.y, this.width, this.height);
         } else {
-            // Fallback while loading
+            // Fallback while loading or if error
             ctx.font = '50px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('🧺', this.x, this.y + 40);
