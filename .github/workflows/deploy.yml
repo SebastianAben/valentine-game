@@ -1,0 +1,44 @@
+name: Deploy to Self-Hosted Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    # KUNCI UTAMA: Gunakan 'self-hosted' agar jalan di server Anda sendiri
+    runs-on: self-hosted
+
+    steps:
+    # 1. Ambil kode terbaru
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Setup Node.js (Pastikan Node.js terinstall di server Anda atau gunakan action ini)
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    # 3. Install & Build
+    - name: Install Dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Build Project
+      working-directory: ./frontend
+      run: npm run build
+
+    # 4. Deploy (Copy file secara lokal)
+    - name: Deploy Local Files
+      run: |
+        # Pastikan folder tujuan ada
+        mkdir -p /home/froztbitez/web-server
+        
+        # Copy hasil build ke folder web server
+        rsync -av --delete ./frontend/dist/ /home/froztbitez/web-server/
+        
+        echo "Deployment Success to /home/froztbitez/web-server! 🚀"
