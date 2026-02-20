@@ -36,9 +36,9 @@ jobs:
     - name: Deploy Local Files
       run: |
         # Pastikan folder tujuan ada
-        mkdir -p /home/froztbitez/web-server
+        mkdir -p /home/froztbitez/web-server/catch-my-heart
         
         # Copy hasil build ke folder web server
-        rsync -av --delete ./frontend/dist/ /home/froztbitez/web-server/
+        rsync -av --delete ./frontend/dist/ /home/froztbitez/web-server/catch-my-heart/
         
-        echo "Deployment Success to /home/froztbitez/web-server! 🚀"
+        echo "Deployment Success to /home/froztbitez/web-server/catch-my-heart! 🚀"
