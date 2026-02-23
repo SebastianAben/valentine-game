@@ -52,7 +52,8 @@ jobs:
         cd /home/froztbitez/web-server/catch-my-heart
         
         # Restart container dengan image terbaru (jika ada update) dan config baru
-        docker compose down
+        # Gunakan --remove-orphans agar container lama yg tidak terpakai/orphan dibersihkan
+        docker compose down --remove-orphans
         docker compose up -d --force-recreate
 
         # Bersihkan image lama yang tidak terpakai (dangling) untuk hemat storage
