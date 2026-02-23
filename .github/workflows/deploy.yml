@@ -36,9 +36,26 @@ jobs:
     - name: Deploy Local Files
       run: |
         # Pastikan folder tujuan ada
-        mkdir -p /home/froztbitez/web-server/catch-my-heart
+        mkdir -p /home/froztbitez/web-server/catch-my-heart/html
         
-        # Copy hasil build ke folder web server
-        rsync -av --delete ./frontend/dist/ /home/froztbitez/web-server/catch-my-heart/
+        # Copy docker-compose.yml ke folder web server
+        cp docker-compose.yml /home/froztbitez/web-server/catch-my-heart/
+        
+        # Copy hasil build ke folder web server (masuk ke folder html untuk di-mount)
+        rsync -av --delete ./frontend/dist/ /home/froztbitez/web-server/catch-my-heart/html/
         
         echo "Deployment Success to /home/froztbitez/web-server/catch-my-heart! 🚀"
+
+    # 5. Restart Docker
+    - name: Restart Docker Container
+      run: |
+        cd /home/froztbitez/web-server/catch-my-heart
+        
+        # Restart container dengan image terbaru (jika ada update) dan config baru
+        docker compose down
+        docker compose up -d --force-recreate
+
+        # Bersihkan image lama yang tidak terpakai (dangling) untuk hemat storage
+        docker image prune -f
+        
+        echo "Docker Container Restarted & System Cleaned! 🐳"
